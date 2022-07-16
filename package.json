@@ -1,0 +1,27 @@
+{
+  "name": "test",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon --watch --exec 'npm start'"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1172.0",
+    "compressing": "^1.6.2",
+    "cookie-parser": "~1.4.4",
+    "dayjs-plugin-utc": "^0.1.2",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.1",
+    "express": "~4.16.1",
+    "fs": "^0.0.1-security",
+    "http-errors": "~1.6.3",
+    "mongoose": "~4.9.8",
+    "morgan": "~1.9.1",
+    "pug": "2.0.0-beta11"
+  },
+  "description": "testing node.js with mongodb",
+  "main": "app.js",
+  "author": "",
+  "license": "ISC"
+}

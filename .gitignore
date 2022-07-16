@@ -1,0 +1,11 @@
+.idea
+.env
+node_modules
+applicationserveronarriveitems.json
+applicationserveronleaveitems.json
+bigdatatransactions.json
+dmsonarriveitems.json
+dmsonleavingitems.json
+rtdonarriveitems.json
+rtdonleavingitems.json
+serviceappointmentstracks.json
