@@ -5,7 +5,6 @@ var logger = require('morgan');
 const db = require('./models/db');
 
 var indexRouter = require('./routes/index');
-var serviceAppointmentTrackRouter = require('./routes/serviceappointmentstracks.routes');
 var etlRouter = require('./routes/etl.routes');
 
 var app = express()

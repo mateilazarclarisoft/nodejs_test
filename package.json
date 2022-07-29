@@ -15,10 +15,14 @@
     "dotenv": "^16.0.1",
     "express": "~4.16.1",
     "fs": "^0.0.1-security",
+    "fstream": "^1.0.12",
     "http-errors": "~1.6.3",
     "mongoose": "~4.9.8",
     "morgan": "~1.9.1",
-    "pug": "2.0.0-beta11"
+    "pug": "2.0.0-beta11",
+    "stream": "0.0.2",
+    "tar": "^6.1.11",
+    "zlib": "^1.0.5"
   },
   "description": "testing node.js with mongodb",
   "main": "app.js",

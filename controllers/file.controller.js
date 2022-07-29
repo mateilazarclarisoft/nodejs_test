@@ -44,4 +44,6 @@ function Compress(fileName){
     compressing.gzip.compressFile(fileName + ".json", req.params.name + ".gz")
         .then(console.log('Compression done'))
         .catch(err => console.log(err));
+    
+    
 }

@@ -1,3 +1,4 @@
+var mongo = require('mongodb');
 module.exports = mongoose => {
     const schema = mongoose.Schema({
         internalTrackingID: String,
@@ -12,5 +13,14 @@ module.exports = mongoose => {
     });
 
     const ApplicationServerOnArrive = mongoose.model("applicationserveronarriveitems", schema);
+
+    ApplicationServerOnArrive.getDocumentsByDate = function(date){
+        var start = new Date(date.setUTCHours(0, 0, 0, 0));
+        var end = new Date(date.setUTCHours(23, 59, 59, 999));
+
+        return this.find({"receivedByApplicationServer": {$gte: start, $lte: end}});
+        //return this.find({_id: {$in:[new mongo.ObjectID("5c2aad80819249660b3b959e"),new mongo.ObjectID("5c2aad80819249660b3b95a0")]} });
+    }
+
     return ApplicationServerOnArrive;
 };
