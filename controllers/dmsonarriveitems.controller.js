@@ -19,8 +19,8 @@ exports.export = async (req, res) => {
                     const start = new Date(recordDate.setUTCHours(0, 0, 0, 0));
                     const end = new Date(recordDate.setUTCHours(23, 59, 59, 999));
 
-                    const startObjectId = dateObjectId.objectIdFromDate(start);
-                    const endObjectId = dateObjectId.objectIdFromDate(end)
+                    const startObjectId = dateObjectId.objectIdFromStartDate(start);
+                    const endObjectId = dateObjectId.objectIdFromEndDate(end)
 
                     const cursor = dmsonarriveitems.getDocumentsByDate(startObjectId,endObjectId).cursor();
                     fileUploader.process(record.latestOperationDate, 'dmsonarriveitems', cursor)
