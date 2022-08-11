@@ -19,12 +19,12 @@ module.exports = mongoose => {
 
     const RtdOnArrive = mongoose.model("rtdonarriveitems", schema);
 
-    RtdOnArrive.getDocumentsByDate = function(start,end){
-        return this.find({"_id": {$gte: start, $lte: end}});
-    }
-
     RtdOnArrive.getMinimumDate = function(){
         return this.find().sort({_id:1}).limit(1)
+    }
+
+    RtdOnArrive.getDocumentsByDate = function(start,end){
+        return this.find({"_id": {$gte: start, $lte: end}});
     }
 
     RtdOnArrive.cleanup = function(start,end){

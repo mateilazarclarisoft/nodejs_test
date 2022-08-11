@@ -19,8 +19,8 @@ exports.export = async (req, res) => {
                     const start = new Date(recordDate.setUTCHours(0, 0, 0, 0));
                     const end = new Date(recordDate.setUTCHours(23, 59, 59, 999));
 
-                    const startObjectId = objectIdFromDate(start);
-                    const endObjectId = objectIdFromDate(end)
+                    const startObjectId = dateObjectId.objectIdFromDate(start);
+                    const endObjectId = dateObjectId.objectIdFromDate(end)
 
                     const cursor = rtdonarriveitems.getDocumentsByDate(startObjectId,endObjectId).cursor();
                     fileUploader.process(recordDate, 'rtdonarriveitems', cursor)

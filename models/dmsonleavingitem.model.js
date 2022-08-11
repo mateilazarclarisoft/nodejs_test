@@ -18,6 +18,10 @@ module.exports = mongoose => {
 
     const DmsOnLeaving = mongoose.model("dmsonleavingitems", schema);
 
+    DmsOnLeaving.getMinimumDate = function(){
+        return this.find().sort({_id:1}).limit(1)
+    }
+
     DmsOnLeaving.getDocumentsByDate = function(date){
         var start = new Date(date.setUTCHours(0, 0, 0, 0));
         var end = new Date(date.setUTCHours(23, 59, 59, 999));
@@ -25,10 +29,6 @@ module.exports = mongoose => {
         var startObjectId = objectIdFromDate(start);
         var endObjectId = objectIdFromDate(end)
         return this.find({"_id": {$gte: startObjectId, $lte: endObjectId}});
-    }
-
-    DmsOnLeaving.getMinimumDate = function(){
-        return this.find().sort({_id:1}).limit(1)
     }
 
     DmsOnLeaving.cleanup = function(date){
