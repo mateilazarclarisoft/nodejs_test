@@ -22,28 +22,13 @@ module.exports = mongoose => {
         return this.find().sort({_id:1}).limit(1)
     }
 
-    DmsOnLeaving.getDocumentsByDate = function(date){
-        var start = new Date(date.setUTCHours(0, 0, 0, 0));
-        var end = new Date(date.setUTCHours(23, 59, 59, 999));
-
-        var startObjectId = objectIdFromDate(start);
-        var endObjectId = objectIdFromDate(end)
-        return this.find({"_id": {$gte: startObjectId, $lte: endObjectId}});
+    DmsOnLeaving.getDocumentsByDate = function(start,end){
+        return this.find({"_id": {$gte: start, $lte: end}});
     }
 
-    DmsOnLeaving.cleanup = function(date){
-        var start = new Date(date.setUTCHours(0, 0, 0, 0));
-        var end = new Date(date.setUTCHours(23, 59, 59, 999));
-
-        var startObjectId = objectIdFromDate(start);
-        var endObjectId = objectIdFromDate(end)
-
-        return this.deleteMany({"_id": {$gte: startObjectId, $lte: endObjectId}});
+    DmsOnLeaving.cleanup = function(start,end){
+        return this.deleteMany({"_id": {$gte: start, $lte: end}});
     }
 
     return DmsOnLeaving;
-};
-
-var objectIdFromDate = function (date) {
-    return Math.floor(date.getTime() / 1000).toString(16) + "0000000000000000";
 };

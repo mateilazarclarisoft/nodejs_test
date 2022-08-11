@@ -1,5 +1,6 @@
 const db = require("../models/db");
 const dmsonleavingitems = db.dmsonleavingitems;
+
 const fileUploader = require("../helpers/file_uploader");
 let processing = false;
 
@@ -13,12 +14,18 @@ exports.export = async (req, res) => {
                 const record = result.pop();
                 const sixtyDays = 60*24*60*60*1000;
 
-                let recordDate = dateFromObjectId(record._id)
+                let recordDate = dateObjectId.dateFromObjectId(record._id)
                 if (Date.now() - recordDate > sixtyDays){
-                    const cursor = dmsonleavingitems.getDocumentsByDate(recordDate).cursor();
+                    const start = new Date(recordDate.setUTCHours(0, 0, 0, 0));
+                    const end = new Date(recordDate.setUTCHours(23, 59, 59, 999));
+
+                    const startObjectId = dateObjectId.objectIdFromDate(start);
+                    const endObjectId = dateObjectId.objectIdFromDate(end)
+
+                    const cursor = dmsonleavingitems.getDocumentsByDate(startObjectId,endObjectId).cursor();
                     fileUploader.process(recordDate, 'dmsonleavingitems', cursor)
                         .then((result) => {
-                            dmsonleavingitems.cleanup(recordDate)
+                            dmsonleavingitems.cleanup(startObjectId,endObjectId)
                                 .then(result=>{
                                     console.log(`Time taken: ${Date.now() - start}ms`);
                                     processing = false;
