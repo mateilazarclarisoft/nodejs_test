@@ -37,5 +37,24 @@ module.exports = mongoose => {
     });
 
     const BigDataTransaction = mongoose.model("bigdatatransactions", schema);
+
+    BigDataTransaction.getDocumentsByDate = function(date){
+        var start = new Date(date.setUTCHours(0, 0, 0, 0));
+        var end = new Date(date.setUTCHours(23, 59, 59, 999));
+
+        return this.find({"operationDate": {$gte: start, $lte: end}});
+    }
+
+    BigDataTransaction.getMinimumDate = function(){
+        return this.find().sort({operationDate:1}).limit(1)
+    }
+
+    BigDataTransaction.cleanup = function(date){
+        var start = new Date(date.setUTCHours(0, 0, 0, 0));
+        var end = new Date(date.setUTCHours(23, 59, 59, 999));
+
+        return this.deleteMany({"operationDate": {$gte: start, $lte: end}});
+    }
+    
     return BigDataTransaction;
 };

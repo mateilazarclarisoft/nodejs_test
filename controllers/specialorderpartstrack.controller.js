@@ -1,26 +1,42 @@
-const mongoose = require('mongoose');
 const db = require("../models/db");
-const specialOrderPartsTrack = db.specialorderpartstracks;
-const fs = require('fs');
+const specialorderpartstracks = db.specialorderpartstracks;
 const fileUploader = require("../helpers/file_uploader");
+let processing = false;
 
-// Retrieve all DealsTracks from the database.
-exports.findAll = async (req, res) => {
-    const queryDate = new Date(Date.UTC(
-        +req.params.year,
-        +req.params.month - 1,
-        +req.params.day
-    ));
-    const formattedDate = `${req.params.year}${req.params.month}${req.params.day}`;
-    var fs = require('fs');
-    var dir = `tmp/specialorderparts/${formattedDate}`;
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
+// Retrieve all specialorderpartstracks from the database.
+exports.export = async (req, res) => {
+    if (!processing) {
+        processing = true;
+        const start = Date.now();
+        specialorderpartstracks.getMinimumDate().exec()
+            .then(result => {
+                const record = result.pop();
+                const sixtyDays = 60*24*60*60*1000;
+                if (Date.now() - record.latestOperationDate > sixtyDays){
+                    const cursor = specialorderpartstracks.getDocumentsByDate(record.latestOperationDate).cursor();
+                    fileUploader.process(record.latestOperationDate, 'specialorderpartstracks', cursor)
+                        .then((result) => {
+                            specialorderpartstracks.cleanup(record.latestOperationDate)
+                                .then(result=>{
+                                    console.log(`Time taken: ${Date.now() - start}ms`);
+                                    processing = false;
+                                })
+                                .catch(error => {
+                                    res.status(500).send({message: error.message});
+                                })
+                        })
+                        .catch(error => {
+                            res.status(500).send({message: error.message});
+                        })
+                        .finally(() => {
+                            res.send({message: "Finished processing"});
+                        })
+                } else {
+                    processing = false;
+                    res.status(500).send({message: "No data older than 60 days can be exported"});
+                }
+            })
+    } else {
+        res.status(500).send({message: "Already processing"});
     }
-
-    const cursor = specialOrderPartsTrack.getDocumentsByDate(queryDate);
-    
-    result = await fileUploader.process(cursor,"specialorderparts",formattedDate);
-    console.log(result);
-    res.send({"message":result});
 };

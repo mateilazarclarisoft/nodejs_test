@@ -1,36 +1,42 @@
-const mongoose = require('mongoose');
 const db = require("../models/db");
 const applicationServerOnArriveItem = db.applicationserveronarriveitems;
-const fs = require('fs');
-const fileUploader = require("../helpers/cursor_file_uploader");
+const fileUploader = require("../helpers/file_uploader");
+let processing = false;
 
 // Retrieve all applicationserveronarriveitems from the database.
-exports.findAll = async (req, res) => {
-    const start = Date.now();
-    const queryDate = new Date(Date.UTC(
-        +req.params.year,
-        +req.params.month - 1,
-        +req.params.day
-    ));
-    const formattedDate = `${req.params.year}${req.params.month}${req.params.day}`;
-
-    var fs = require('fs');
-    var dir = `tmp/${formattedDate}`;
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+exports.export = async (req, res) => {
+    if (!processing) {
+        processing = true;
+        const start = Date.now();
+        applicationServerOnArriveItem.getMinimumDate().exec()
+            .then(result => {
+                const record = result.pop();
+                const sixtyDays = 60*24*60*60*1000;
+                if (Date.now() - record.receivedByApplicationServer > sixtyDays){
+                    const cursor = applicationServerOnArriveItem.getDocumentsByDate(record.receivedByApplicationServer).cursor();
+                    fileUploader.process(record.receivedByApplicationServer, 'applicationserveronarriveitems', cursor)
+                        .then((result) => {
+                            applicationServerOnArriveItem.cleanup(record.receivedByApplicationServer)
+                                .then(result=>{
+                                    console.log(`Time taken: ${Date.now() - start}ms`);
+                                    processing = false;
+                                })
+                                .catch(error => {
+                                    res.status(500).send({message: error.message});
+                                })
+                        })
+                        .catch(error => {
+                            res.status(500).send({message: error.message});
+                        })
+                        .finally(() => {
+                            res.send({message: "Finished processing"});
+                        })
+                } else {
+                    processing = false;
+                    res.status(500).send({message: "No data older than 60 days can be exported"});
+                }
+            })
+    } else {
+        res.status(500).send({message: "Already processing"});
     }
-
-    const cursor = applicationServerOnArriveItem.getDocumentsByDate(queryDate).cursor();
-    fileUploader.process(formattedDate,'applicationserveronarriveitems',cursor)
-        .then((result) => {
-            res.send({ "message": result });
-        })
-        .catch(error => {
-            res.status(500).send({ message: error.message });
-        })
-        .finally(() => {
-            console.log(`Time taken: ${Date.now() - start}ms`);
-        })
-             
 };
-

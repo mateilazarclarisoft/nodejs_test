@@ -34,6 +34,6 @@ db.rtdonarriveitems = require('./rtdonarriveitem.model')(mongoose)
 db.rtdonleavingitems = require('./rtdonleavingitem.model')(mongoose)
 db.serviceappointmenttracks = require('./serviceappointmentstrack.model')(mongoose)
 db.dealstracks = require('./dealstrack.model')(mongoose)
-db.repairorderstracks = require('./repairorderstrack.model')(mongoose)
+db.repairorderstracks = require('./repairorderstracks.model')(mongoose)
 db.specialorderpartstracks = require('./specialorderpartstrack.model')(mongoose)
 module.exports = db;

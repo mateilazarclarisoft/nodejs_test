@@ -1,22 +1,24 @@
 const db = require("../models/db");
-const serviceappointmentstracks = db.serviceappointmenttracks;
+const dmsonleavingitems = db.dmsonleavingitems;
 const fileUploader = require("../helpers/file_uploader");
 let processing = false;
 
-// Retrieve all serviceappointmentstracks from the database
+// Retrieve all dmsonleavingitems from the database.
 exports.export = async (req, res) => {
     if (!processing) {
         processing = true;
         const start = Date.now();
-        serviceappointmentstracks.getMinimumDate().exec()
+        dmsonleavingitems.getMinimumDate().exec()
             .then(result => {
                 const record = result.pop();
                 const sixtyDays = 60*24*60*60*1000;
-                if (Date.now() - record.latestOperationDate > sixtyDays){
-                    const cursor = serviceappointmentstracks.getDocumentsByDate(record.latestOperationDate).cursor();
-                    fileUploader.process(record.latestOperationDate, 'serviceappointmentstracks', cursor)
+
+                let recordDate = dateFromObjectId(record._id)
+                if (Date.now() - recordDate > sixtyDays){
+                    const cursor = dmsonleavingitems.getDocumentsByDate(recordDate).cursor();
+                    fileUploader.process(recordDate, 'dmsonleavingitems', cursor)
                         .then((result) => {
-                            serviceappointmentstracks.cleanup(record.latestOperationDate)
+                            dmsonleavingitems.cleanup(recordDate)
                                 .then(result=>{
                                     console.log(`Time taken: ${Date.now() - start}ms`);
                                     processing = false;
@@ -39,4 +41,11 @@ exports.export = async (req, res) => {
     } else {
         res.status(500).send({message: "Already processing"});
     }
+};
+
+
+var dateFromObjectId = function (objectId) {
+    var date = objectId.getTimestamp();
+    return new Date(date);
+    return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
 };

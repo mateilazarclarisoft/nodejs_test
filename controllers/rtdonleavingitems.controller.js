@@ -1,22 +1,21 @@
 const db = require("../models/db");
-const serviceappointmentstracks = db.serviceappointmenttracks;
+const rtdonleavingitems = db.rtdonleavingitems;
 const fileUploader = require("../helpers/file_uploader");
 let processing = false;
 
-// Retrieve all serviceappointmentstracks from the database
 exports.export = async (req, res) => {
     if (!processing) {
         processing = true;
         const start = Date.now();
-        serviceappointmentstracks.getMinimumDate().exec()
+        rtdonleavingitems.getMinimumDate().exec()
             .then(result => {
                 const record = result.pop();
                 const sixtyDays = 60*24*60*60*1000;
-                if (Date.now() - record.latestOperationDate > sixtyDays){
-                    const cursor = serviceappointmentstracks.getDocumentsByDate(record.latestOperationDate).cursor();
-                    fileUploader.process(record.latestOperationDate, 'serviceappointmentstracks', cursor)
+                if (Date.now() - record.sendToSqs > sixtyDays){
+                    const cursor = rtdonleavingitems.getDocumentsByDate(record.sendToSqs).cursor();
+                    fileUploader.process(record.sendToSqs, 'rtdonleavingitems', cursor)
                         .then((result) => {
-                            serviceappointmentstracks.cleanup(record.latestOperationDate)
+                            rtdonleavingitems.cleanup(record.sendToSqs)
                                 .then(result=>{
                                     console.log(`Time taken: ${Date.now() - start}ms`);
                                     processing = false;

@@ -1,6 +1,6 @@
 module.exports = mongoose => {
     const schema = mongoose.Schema({
-        dealNumber: String,
+        roNumber: String,
         vin: String,
 
         internalDealerCode: String,
@@ -34,7 +34,7 @@ module.exports = mongoose => {
         transactions: [{type: mongoose.Schema.Types.ObjectId, ref: (require('./bigdatatransaction.model').modelName)}]
     });
 
-    schema.index({latestOperationDate: -1, customerNumber: 1, internalDealerCode: 1, dealNumber: 1}, {name: "compound_1", background: true});
+    schema.index({latestOperationDate: -1, customerNumber: 1, internalDealerCode: 1, roNumber: 1}, {name: "compound_1", background: true});
 
     schema.method("toJSON", function() {
         const { __v, _id, ...object } = this.toObject();
@@ -42,24 +42,25 @@ module.exports = mongoose => {
         return object;
     });
 
-    const DealsTrack = mongoose.model("dealstracks", schema);
-    DealsTrack.getDocumentsByDate = function(date){
+    const RepairOrdersTrack = mongoose.model("repairorderstracks", schema);
+
+    RepairOrdersTrack.getDocumentsByDate = function(date){
         var start = new Date(date.setUTCHours(0, 0, 0, 0));
         var end = new Date(date.setUTCHours(23, 59, 59, 999));
 
         return this.find({"latestOperationDate": {$gte: start, $lte: end}});
     }
 
-    DealsTrack.getMinimumDate = function(){
+    RepairOrdersTrack.getMinimumDate = function(){
         return this.find().sort({latestOperationDate:1}).limit(1)
     }
 
-    DealsTrack.cleanup = function(date){
+    RepairOrdersTrack.cleanup = function(date){
         var start = new Date(date.setUTCHours(0, 0, 0, 0));
         var end = new Date(date.setUTCHours(23, 59, 59, 999));
 
         return this.deleteMany({"latestOperationDate": {$gte: start, $lte: end}});
     }
 
-    return DealsTrack;
+    return RepairOrdersTrack;
 };

@@ -18,5 +18,24 @@ module.exports = mongoose => {
     });
 
     const RtdOnLeave = mongoose.model("rtdonleavingitems", schema);
+
+    RtdOnLeave.getDocumentsByDate = function(date){
+        var start = new Date(date.setUTCHours(0, 0, 0, 0));
+        var end = new Date(date.setUTCHours(23, 59, 59, 999));
+
+        return this.find({"sentToSqs": {$gte: start, $lte: end}});
+    }
+
+    RtdOnLeave.getMinimumDate = function(){
+        return this.find().sort({sentToSqs:1}).limit(1)
+    }
+
+    RtdOnLeave.cleanup = function(date){
+        var start = new Date(date.setUTCHours(0, 0, 0, 0));
+        var end = new Date(date.setUTCHours(23, 59, 59, 999));
+
+        return this.deleteMany({"sentToSqs": {$gte: start, $lte: end}});
+    }
+    
     return RtdOnLeave;
 };
