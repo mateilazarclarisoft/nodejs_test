@@ -6,6 +6,7 @@ const BigDataTransactionsController = require("../controllers/bigdatatransaction
 const DealsTracksController = require("../controllers/dealstracks.controller");
 const DmsOnArriveItemsController = require("../controllers/dmsonarriveitems.controller")
 const RepairsOrdersTracksController = require("../controllers/repairorderstrack.controller")
+const RtdOnArriveItemsController = require("../controllers/rtdonarriveitems.controller")
 const RtdOnLeavingItemsController = require("../controllers/rtdonleavingitems.controller")
 const ServiceAppointmentsTracksController = require("../controllers/serviceappointmenttrack.controller");
 const SpecialOrderPartsTracksController = require("../controllers/specialorderpartstrack.controller");
@@ -33,6 +34,7 @@ router.get("/dealstracks/export", DealsTracksController.export);
 router.get("/dmsonarriveitems/export", DmsOnArriveItemsController.export);
 router.get("/dmsonleavingitems/export", DmsOnLeavingItemsController.export);
 router.get("/repairsorderstracks/export", RepairsOrdersTracksController.export);
+router.get("/rtdonarriveitems/export", RtdOnArriveItemsController.export);
 router.get("/rtdonleavingitems/export", RtdOnLeavingItemsController.export);
 router.get("/serviceappointmentstracks/export", ServiceAppointmentsTracksController.export);
 router.get("/specialorderpartstracks/export", SpecialOrderPartsTracksController.export);
