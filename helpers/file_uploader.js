@@ -37,7 +37,8 @@ exports.process = async(date, type, cursor) => {
             .then(()=>{
                 compress(formattedDate,type)
                     .then(() => {
-                        uploadFile(`tmp/${formattedDate}_${type}.tgz`, `${type}/${formattedDate}.tgz`)
+                        const formattedDateS3 = formatDate(date,"Y/m/d");
+                        uploadFile(`tmp/${formattedDate}_${type}.tgz`, `${type}/${formattedDateS3}/archive.tgz`)
                             .then(() => {
                                 deleteFile(formattedDate,type);
                                 deleteFolder(formattedDate);
@@ -140,17 +141,20 @@ function deleteFolder(formattedDate){
 }
 
 
-function formatDate(date = new Date()) {
+function formatDate(date = new Date(), type = "Ymd") {
+    let separator = "";
+    if (type !== "Ymd"){
+        separator = "/";
+    }
     if (typeof date === "string"){
-        return date.substring(0,10).replace(/-/g,'');
+        return date.substring(0,10).replace(/-/g,separator);
     } else {
         return [
             date.getFullYear(),
             padTo2Digits(date.getMonth() + 1),
             padTo2Digits(date.getDate()),
-        ].join('');
+        ].join(separator);
     }
-
 }
 
 function padTo2Digits(num) {
